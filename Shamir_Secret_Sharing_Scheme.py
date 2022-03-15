@@ -31,7 +31,18 @@ def create_coefficients(threshold):
     return [secrets.randbelow(MAX_BOUND) for _ in range(threshold - 1)]
 
 def create_x_coordinates(shares_number):
-   return [secrets.randbelow(MAX_BOUND) for _ in range(shares_number)]
+   x_coordinates = []
+   unique_numbers = set()
+   counter_unique_numbers = 0
+
+   while(counter_unique_numbers < shares_number):
+       generated_number = secrets.randbelow(MAX_BOUND)
+       if generated_number not in unique_numbers:
+           x_coordinates.append(generated_number)
+           unique_numbers.add(generated_number)
+           counter_unique_numbers += 1
+
+   return x_coordinates
 
 def create_y_coordinates(all_coefficients, x_coordinates):
     y_coordinates = []
@@ -60,11 +71,6 @@ def create_shares(secret, threshold, shares_number):
     share_list = create_points(all_coefficients, shares_number)
     return share_list
 
-
-def check_duplicates(shares):
-    #TO DO
-    return 1
-
 def start():
     while(True):
         secret = int(input("Input the secret as a number: "))
@@ -79,6 +85,9 @@ def start():
 
         if shares_number < 1:
             raise ValueError("The number of total shares should be higher than 0")
+
+        if MAX_BOUND < shares_number:
+            raise ValueError("The number of total shares should be lower than the possible maximum number of shares")
 
         share_list = create_shares(secret, threshold, shares_number)
         
