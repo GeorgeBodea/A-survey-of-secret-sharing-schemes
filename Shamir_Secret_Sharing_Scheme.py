@@ -2,7 +2,6 @@ import secrets
 
 MAX_BOUND = 64
 
-
 def g_i(i, share_list):
     product = 1
     for j in range(len(share_list)):
