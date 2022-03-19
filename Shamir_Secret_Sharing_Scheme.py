@@ -89,8 +89,8 @@ def start():
             raise ValueError("The number of total shares should be lower than the possible maximum number of shares")
 
         share_list = create_shares(secret, threshold, shares_number)
-        
-        reconstruct_secret(share_list[:threshold])
+        return share_list
+    # reconstruct_secret(share_list[:threshold])
 
 if __name__ == '__main__':
     start()
