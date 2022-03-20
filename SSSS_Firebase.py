@@ -1,5 +1,5 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
-from CloudFirebase.firebase_config import db
+from FirebaseConfig.firebase_config import db
 
 def download_firebase(max_length):
     share_list = []
