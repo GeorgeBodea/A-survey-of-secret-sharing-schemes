@@ -28,5 +28,5 @@ def start_firebase(share_list):
     cleanup_firebase()
     upload_firebase(share_list)
     downloaded_shares = download_firebase()
-    print("Downloaded shares to Firebase: " + str(downloaded_shares))
+    print("Downloaded shares from Firebase: " + str(downloaded_shares))
     return downloaded_shares
