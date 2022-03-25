@@ -1,5 +1,6 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
 from DropboxConfig.dropbox_config import dbx
+from ast import literal_eval
 
 def load_shares_file(share_list):
     f = open("./DropboxConfig/content_upload.txt", "w")
@@ -25,10 +26,13 @@ def download_dropbox():
     shares_path_dropbox = "/Shares/content_upload.txt"
     metadata, res = dbx.files_download(path= shares_path_dropbox )
     share_list = res.content.decode('UTF-8')
+    share_list = literal_eval(share_list)
     return share_list
 
 def start_dropbox(share_list):
     cleanup_dropbox()
     upload_dropbox(share_list)
     clear_shares_file()
-    print("Uploaded shares to dropbox: " + str(download_dropbox()))
+    downloaded_shares = download_dropbox()
+    print("Downloaded shares from Dropbox: " + str(downloaded_shares))
+    return downloaded_shares

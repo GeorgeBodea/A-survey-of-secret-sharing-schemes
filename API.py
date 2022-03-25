@@ -4,7 +4,7 @@ import SSSS_DropBox
 import SSSS_Clever
 
 if __name__ == '__main__':
-    share_list = SSSS.start()
+    share_list, threshold = SSSS.start()
     len_share_list = len(share_list)
     index_first_cut = int(len_share_list/3)
     index_second_cut = int(len_share_list*2/3)
@@ -16,6 +16,12 @@ if __name__ == '__main__':
     print("First part: " + str(first_part))
     print("Second part: " + str(second_part))
     print("Third part: " + str(third_part))
-    SSSS_Firebase.start_firebase(first_part)
-    SSSS_DropBox.start_dropbox(second_part)
-    SSSS_Clever.start_clever(third_part)
+    downloaded_share_list = SSSS_Firebase.start_firebase(first_part)
+    if len(downloaded_share_list) < threshold:
+        downloaded_share_list = downloaded_share_list + SSSS_DropBox.start_dropbox(second_part)
+    if len(downloaded_share_list) < threshold:
+        downloaded_share_list = downloaded_share_list + SSSS_Clever.start_clever(third_part)
+
+    shares_used = len(downloaded_share_list) 
+    print("The secret reconstructed is: " + str(SSSS.reconstruct_secret(share_list)))
+    print(str(shares_used) + " shares have been used to reconstruct the secret")

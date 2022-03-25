@@ -1,10 +1,11 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
 from FirebaseConfig.firebase_config import db
 
-def download_firebase(length):
+def download_firebase():
     share_list = []
-    for i in range(0, length):
-        doc = db.collection("Shares").document(str(i)).get()
+
+    docs = db.collection(u'Shares').stream()
+    for doc in docs:
         doc = doc.to_dict()
         share = (doc["x"], doc["y"])
         share_list.append(share)
@@ -15,7 +16,7 @@ def upload_firebase(share_list):
     for i in range(0, length):
         share = share_list[i]
         data = {"x": share[0], "y": share[1]}
-        db.collection("Shares").document(str(i)).set(data)    
+        db.collection("Shares").document().set(data)    
 
 def cleanup_firebase():
     share_docs = db.collection("Shares").get()
@@ -26,4 +27,6 @@ def cleanup_firebase():
 def start_firebase(share_list):
     cleanup_firebase()
     upload_firebase(share_list)
-    print("Uploaded shares to firebase: " + str(download_firebase(len(share_list))))
+    downloaded_shares = download_firebase()
+    print("Downloaded shares to Firebase: " + str(downloaded_shares))
+    return downloaded_shares

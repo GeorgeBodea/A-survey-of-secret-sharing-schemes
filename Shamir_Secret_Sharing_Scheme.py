@@ -21,7 +21,7 @@ def reconstruct_secret(share_list):
 
         sum += float(y * g_i(i, share_list))
         i += 1
-    print(round(sum))
+    return round(sum)
 
 
 # Having the threshold k = 3, we would need a polynomial function composed
@@ -89,8 +89,5 @@ def start():
             raise ValueError("The number of total shares should be lower than the possible maximum number of shares")
 
         share_list = create_shares(secret, threshold, shares_number)
-        return share_list
+        return (share_list, threshold)
     # reconstruct_secret(share_list[:threshold])
-
-if __name__ == '__main__':
-    start()
