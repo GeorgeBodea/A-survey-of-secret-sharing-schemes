@@ -1,6 +1,7 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
 import SSSS_Firebase
 import SSSS_DropBox
+import SSSS_Clever
 
 if __name__ == '__main__':
     share_list = SSSS.start()
@@ -17,3 +18,4 @@ if __name__ == '__main__':
     print("Third part: " + str(third_part))
     SSSS_Firebase.start_firebase(first_part)
     SSSS_DropBox.start_dropbox(second_part)
+    SSSS_Clever.start_clever(third_part)
