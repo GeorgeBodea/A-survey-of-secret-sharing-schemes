@@ -1,6 +1,10 @@
 import secrets
+import math
+from decimal import Decimal, getcontext
 
 MAX_BOUND = 64
+
+getcontext().prec = 250
 
 def g_i(i, share_list):
     product = 1
@@ -8,20 +12,20 @@ def g_i(i, share_list):
         x_i = share_list[i][0]
         if i != j:
             x_j = share_list[j][0]
-            product *= float(float(-x_j) / float(x_i - x_j))
+            product *= Decimal(Decimal(-x_j) / Decimal(x_i - x_j))
     return product
 
 def reconstruct_secret(share_list):
     # THE SECRET IS RECOVERED BY PLUGING IN X = 0
     i = 0
     sum = 0
-
-    # Ignore first share (the secret). It won't be distributed
     for x, y in share_list:
-
-        sum += float(y * g_i(i, share_list))
+        sum += Decimal(y * g_i(i, share_list))
         i += 1
-    return round(sum)
+    sum = round(sum)
+    secret = sum.to_bytes(math.ceil(sum.bit_length() / 8), 'little').decode('ASCII')
+    return secret
+    # return round(sum)
 
 
 # Having the threshold k = 3, we would need a polynomial function composed
@@ -72,7 +76,8 @@ def create_shares(secret, threshold, shares_number):
 
 def start():
     while(True):
-        secret = int(input("Input the secret as a number: "))
+        secret = input("Input the secret: ")
+        secret = int.from_bytes(secret.encode('ASCII'), 'little')
         shares_number = int(input("Input the number of total shares: "))
         threshold = int(input("Input the threshold: "))
 

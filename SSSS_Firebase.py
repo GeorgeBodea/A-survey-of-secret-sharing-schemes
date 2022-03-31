@@ -3,11 +3,10 @@ from FirebaseConfig.firebase_config import db
 
 def download_firebase():
     share_list = []
-
     docs = db.collection(u'Shares').stream()
     for doc in docs:
         doc = doc.to_dict()
-        share = (doc["x"], doc["y"])
+        share = (int(doc["x"]), int(doc["y"]))
         share_list.append(share)
     return share_list
 
@@ -15,7 +14,7 @@ def upload_firebase(share_list):
     length = len(share_list)
     for i in range(0, length):
         share = share_list[i]
-        data = {"x": share[0], "y": share[1]}
+        data = {"x": str(share[0]), "y": str(share[1])}
         db.collection("Shares").document().set(data)    
 
 def cleanup_firebase():
