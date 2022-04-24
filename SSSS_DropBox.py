@@ -11,16 +11,18 @@ def clear_shares_file():
     f = open("./DropboxConfig/content_upload.txt", "w")
     f.close()
 
+def cleanup_dropbox():
+    root_path_dropbox = "/Shares"
+    dbx.files_delete_v2(root_path_dropbox)    
+
 def upload_dropbox(share_list):
+    cleanup_dropbox()
     load_shares_file(share_list)
     file_to_upload = open("./DropboxConfig/content_upload.txt", "rb")
     file_to_upload = file_to_upload.read()
     shares_path_dropbox = "/Shares/content_upload.txt"
     dbx.files_upload(file_to_upload, shares_path_dropbox)
-
-def cleanup_dropbox():
-    root_path_dropbox = "/Shares"
-    dbx.files_delete_v2(root_path_dropbox)
+    clear_shares_file()
 
 def download_dropbox():
     shares_path_dropbox = "/Shares/content_upload.txt"
@@ -30,7 +32,6 @@ def download_dropbox():
     return share_list
 
 def start_dropbox(share_list):
-    cleanup_dropbox()
     upload_dropbox(share_list)
     clear_shares_file()
     downloaded_shares = download_dropbox()

@@ -14,8 +14,8 @@ def download_clever():
     return share_list
 
 def upload_clever(share_list):
+    cleanup_clever()
     dbx.execute("CREATE TABLE shares (x VARCHAR(256), y VARCHAR(256))")
-
     length = len(share_list)
     for i in range(0, length):
         share = share_list[i]

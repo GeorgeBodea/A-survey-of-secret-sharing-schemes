@@ -11,6 +11,7 @@ def download_firebase():
     return share_list
 
 def upload_firebase(share_list):
+    cleanup_firebase()
     length = len(share_list)
     for i in range(0, length):
         share = share_list[i]

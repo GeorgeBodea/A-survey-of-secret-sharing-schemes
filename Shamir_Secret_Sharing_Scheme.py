@@ -16,7 +16,6 @@ def g_i(i, share_list):
     return product
 
 def reconstruct_secret(share_list):
-    # THE SECRET IS RECOVERED BY PLUGING IN X = 0
     i = 0
     sum = 0
     for x, y in share_list:
@@ -25,11 +24,7 @@ def reconstruct_secret(share_list):
     sum = round(sum)
     secret = sum.to_bytes(math.ceil(sum.bit_length() / 8), 'little').decode('ASCII')
     return secret
-    # return round(sum)
 
-
-# Having the threshold k = 3, we would need a polynomial function composed
-# of elements of grade 2, that is, 3 elements, the last beeing the secret
 def create_coefficients(threshold):
     return [secrets.randbelow(MAX_BOUND) for _ in range(threshold - 1)]
 
