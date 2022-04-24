@@ -73,26 +73,3 @@ def create_shares(secret, threshold, shares_number):
     print("All coefficients: " + str(all_coefficients))
     share_list = create_points(all_coefficients, shares_number)
     return share_list
-
-def start():
-    while(True):
-        secret = input("Input the secret: ")
-        secret = int.from_bytes(secret.encode('ASCII'), 'little')
-        shares_number = int(input("Input the number of total shares: "))
-        threshold = int(input("Input the threshold: "))
-
-        if threshold > shares_number:
-            raise ValueError("The threshold should be lower than the number of total shares")
-
-        if threshold < 1:
-            raise ValueError("The threshold should be higher than 0")
-
-        if shares_number < 1:
-            raise ValueError("The number of total shares should be higher than 0")
-
-        if MAX_BOUND < shares_number:
-            raise ValueError("The number of total shares should be lower than the possible maximum number of shares")
-
-        share_list = create_shares(secret, threshold, shares_number)
-        return (share_list, threshold)
-    # reconstruct_secret(share_list[:threshold])
