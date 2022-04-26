@@ -4,23 +4,23 @@ import SSSS_DropBox
 import SSSS_Clever
 
 def input_stage():
-    while(True):
-        secret = input("Input the secret: ")
-        secret = int.from_bytes(secret.encode('ASCII'), 'little')
-        shares_number = int(input("Input the number of total shares: "))
-        threshold = int(input("Input the threshold: "))
+    # while(True):
+    secret = input("Input the secret: ")
+    secret = int.from_bytes(secret.encode('ASCII'), 'little')
+    shares_number = int(input("Input the number of total shares: "))
+    threshold = int(input("Input the threshold: "))
 
-        if threshold > shares_number:
-            raise ValueError("The threshold should be lower than the number of total shares")
-        if threshold < 1:
-            raise ValueError("The threshold should be higher than 0")
-        if shares_number < 1:
-            raise ValueError("The number of total shares should be higher than 0")
-        if SSSS.MAX_BOUND < shares_number:
-            raise ValueError("The number of total shares should be lower than the possible maximum number of shares")
+    if threshold > shares_number:
+        raise ValueError("The threshold should be lower than the number of total shares")
+    if threshold < 1:
+        raise ValueError("The threshold should be higher than 0")
+    if shares_number < 1:
+        raise ValueError("The number of total shares should be higher than 0")
+    if SSSS.MAX_BOUND < shares_number:
+        raise ValueError("The number of total shares should be lower than the possible maximum number of shares")
 
-        share_list = SSSS.create_shares(secret, threshold, shares_number)
-        return (share_list, threshold)    
+    share_list = SSSS.create_shares(secret, threshold, shares_number)
+    return (share_list, threshold)    
 
 def distribution_stage(share_list):
     len_share_list = len(share_list)
