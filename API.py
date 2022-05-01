@@ -2,7 +2,6 @@ import Shamir_Secret_Sharing_Scheme as SSSS
 import SSSS_Firebase
 import SSSS_DropBox
 import SSSS_Clever
-from GraphicalUserInterface.GUI import input_gui as i_gui, distribution_gui as d_gui, reconstruction_gui as r_gui
 
 def input_api(secret, shares_number, threshold):
     # while(True):
@@ -40,6 +39,8 @@ def distribution_api(share_list):
     SSSS_DropBox.upload_dropbox(second_part)
     SSSS_Clever.upload_clever(third_part)
 
+    return (first_part, second_part, third_part)
+
 def reconstruction_api(threshold):
     firebase_shares = SSSS_Firebase.download_firebase()
     dropbox_shares = []
@@ -56,7 +57,7 @@ def reconstruction_api(threshold):
     print(str(number_of_shares) + " shares have been used to reconstruct the secret")
 
 
-if __name__ == '__main__':
-    share_list, threshold = input_api("tkinter", 5, 3)
-    distribution_api(share_list)
-    reconstruction_api(threshold)
+# if __name__ == '__main__':
+#     share_list, threshold = input_api()
+#     distribution_api(share_list)
+#     reconstruction_api(threshold)

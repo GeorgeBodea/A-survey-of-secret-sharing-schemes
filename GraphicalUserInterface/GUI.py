@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import W, messagebox
+import sys
+sys.path.insert(1, './')
+from API import input_api as i_api, distribution_api as d_api, reconstruction_api as r_api
 
 
 def reconstruction_gui(input_frame):
@@ -14,7 +17,7 @@ def reconstruction_gui(input_frame):
     label = tk.Label(distribution_frame, text = "Firebase")
     label.grid(row = 1, column = 0, sticky = W, pady=30, padx=10)
 
-def distribution_gui(input_frame):
+def distribution_gui(input_frame, first_part, second_part, third_part):
     delete_frame(input_frame)
     distribution_frame = tk.Frame(gui)
     distribution_frame.pack()
@@ -22,20 +25,34 @@ def distribution_gui(input_frame):
     label.configure(font=(20))
     label.grid(row = 0, column = 0, columnspan=3, sticky = W, pady=30)
 
-    label = tk.Label(distribution_frame, text = "Firebase")
+    label = tk.Label(distribution_frame, text = "Firebase: " + str(first_part))
     label.grid(row = 1, column = 0, sticky = W, pady=30, padx=10)
-    
-    label = tk.Label(distribution_frame, text = "Dropbox")
-    label.grid(row = 2, column = 0, sticky = W, pady=30, padx=10)
 
-    label = tk.Label(distribution_frame, text = "Clever")
+
+    
+    label = tk.Label(distribution_frame, text = "Dropbox: " + str(second_part))
     label.grid(row = 3, column = 0, sticky = W, pady=30, padx=10)
+
+
+
+
+    label = tk.Label(distribution_frame, text = "Clever: " + str(third_part))
+    label.grid(row = 5, column = 0, sticky = W, pady=30, padx=10)
+
 
     button = tk.Button(distribution_frame, 
                             text='Confirm', 
                             width=25, 
                             command=lambda: reconstruction_gui(distribution_frame))
-    button.grid(row = 4, column = 0, columnspan = 1, sticky = W, pady=15)
+    button.grid(row = 7, column = 0, columnspan = 1, sticky = W, pady=15)
+
+def send_input(input_frame, text_secret, text_shares, text_threshold):
+    secret = text_secret.get()
+    shares_number = int(text_shares.get())
+    threshold = int(text_threshold.get())
+    share_list, threshold = i_api(secret, shares_number, threshold)
+    (first_part, second_part, third_part) = d_api(share_list)
+    distribution_gui(input_frame, first_part, second_part, third_part)
 
 def delete_frame(frame):
     # messagebox.showwarning("showwarning", "Warning")
@@ -80,7 +97,7 @@ def input_gui():
     button = tk.Button(input_frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: distribution_gui(input_frame))
+                            command=lambda: send_input(input_frame, text_secret, text_shares, text_threshold))
     button.grid(row = 4, column = 1, columnspan = 2, sticky = W, pady=15)
     
 if __name__ == '__main__':
