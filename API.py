@@ -2,13 +2,14 @@ import Shamir_Secret_Sharing_Scheme as SSSS
 import SSSS_Firebase
 import SSSS_DropBox
 import SSSS_Clever
+from GraphicalUserInterface.GUI import input_gui as i_gui, distribution_gui as d_gui, reconstruction_gui as r_gui
 
-def input_stage():
+def input_api(secret, shares_number, threshold):
     # while(True):
-    secret = input("Input the secret: ")
+    # secret = input("Input the secret: ")
     secret = int.from_bytes(secret.encode('ASCII'), 'little')
-    shares_number = int(input("Input the number of total shares: "))
-    threshold = int(input("Input the threshold: "))
+    # shares_number = int(input("Input the number of total shares: "))
+    # threshold = int(input("Input the threshold: "))
 
     if threshold > shares_number:
         raise ValueError("The threshold should be lower than the number of total shares")
@@ -22,7 +23,7 @@ def input_stage():
     share_list = SSSS.create_shares(secret, threshold, shares_number)
     return (share_list, threshold)    
 
-def distribution_stage(share_list):
+def distribution_api(share_list):
     len_share_list = len(share_list)
     index_first_cut = int(len_share_list/3)
     index_second_cut = int(len_share_list*2/3)
@@ -39,7 +40,7 @@ def distribution_stage(share_list):
     SSSS_DropBox.upload_dropbox(second_part)
     SSSS_Clever.upload_clever(third_part)
 
-def reconstruction_stage(threshold):
+def reconstruction_api(threshold):
     firebase_shares = SSSS_Firebase.download_firebase()
     dropbox_shares = []
     clever_shares = []
@@ -56,6 +57,6 @@ def reconstruction_stage(threshold):
 
 
 if __name__ == '__main__':
-    share_list, threshold = input_stage()
-    distribution_stage(share_list)
-    reconstruction_stage(threshold)
+    share_list, threshold = input_api("tkinter", 5, 3)
+    distribution_api(share_list)
+    reconstruction_api(threshold)
