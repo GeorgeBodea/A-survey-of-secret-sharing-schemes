@@ -28,5 +28,5 @@ def start_clever(share_list):
     cleanup_clever()
     upload_clever(share_list)
     downloaded_shares = download_clever()
-    print("Downloaded shares from Clevercloud: " + str(downloaded_shares))
+    print("Downloaded shares from CleverCloud: " + str(downloaded_shares))
     return downloaded_shares

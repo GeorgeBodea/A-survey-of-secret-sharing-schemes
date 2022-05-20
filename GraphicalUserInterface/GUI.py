@@ -5,7 +5,7 @@ sys.path.insert(1, './')
 from API import input_api as i_api, distribution_api as d_api, reconstruction_api as r_api
 
 
-def reconstruction_gui(input_frame):
+def reconstruction_gui(input_frame, length_first, length_second, length_third, threshold):
     delete_frame(input_frame)
     distribution_frame = tk.Frame(gui)
     distribution_frame.pack()
@@ -14,36 +14,51 @@ def reconstruction_gui(input_frame):
     label.configure(font=(20))
     label.grid(row = 0, column = 0, columnspan=3, sticky = W, pady=30)
 
-    label = tk.Label(distribution_frame, text = "Firebase")
+    label = tk.Label(distribution_frame, text = "Firebase: " + str(length_first) + " shares used")
     label.grid(row = 1, column = 0, sticky = W, pady=30, padx=10)
 
-def distribution_gui(input_frame, first_part, second_part, third_part):
+    label = tk.Label(distribution_frame, text = "Dropbox: " + str(length_second) + " shares used")
+    label.grid(row = 2, column = 0, sticky = W, pady=30, padx=10)
+
+    label = tk.Label(distribution_frame, text = "CleverCloud: " + str(length_third) + " shares used")
+    label.grid(row = 3, column = 0, sticky = W, pady=30, padx=10)
+
+    secret = r_api(threshold)
+
+    label = tk.Label(distribution_frame, text = "The secret is: " + secret)
+    label.grid(row = 4, column = 0, sticky = W, pady=30, padx=10)
+
+def distribution_gui(input_frame, first_part, second_part, third_part, threshold):
     delete_frame(input_frame)
     distribution_frame = tk.Frame(gui)
     distribution_frame.pack()
+
     label = tk.Label(distribution_frame, text = "Distribution stage")
     label.configure(font=(20))
     label.grid(row = 0, column = 0, columnspan=3, sticky = W, pady=30)
 
     label = tk.Label(distribution_frame, text = "Firebase: " + str(first_part))
     label.grid(row = 1, column = 0, sticky = W, pady=30, padx=10)
-
-
     
     label = tk.Label(distribution_frame, text = "Dropbox: " + str(second_part))
     label.grid(row = 3, column = 0, sticky = W, pady=30, padx=10)
 
-
-
-
-    label = tk.Label(distribution_frame, text = "Clever: " + str(third_part))
+    label = tk.Label(distribution_frame, text = "CleverCloud: " + str(third_part))
     label.grid(row = 5, column = 0, sticky = W, pady=30, padx=10)
 
+    len_fst = len(first_part)
+    len_sec = 0
+    len_thr = 0
+
+    if len_fst < threshold:  
+        len_sec = len(second_part)
+    if len_fst + len_sec < threshold:
+        len_thr = len(third_part)
 
     button = tk.Button(distribution_frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: reconstruction_gui(distribution_frame))
+                            command=lambda: reconstruction_gui(distribution_frame, len_fst, len_sec, len_thr, threshold))
     button.grid(row = 7, column = 0, columnspan = 1, sticky = W, pady=15)
 
 def send_input(input_frame, text_secret, text_shares, text_threshold):
@@ -52,7 +67,7 @@ def send_input(input_frame, text_secret, text_shares, text_threshold):
     threshold = int(text_threshold.get())
     share_list, threshold = i_api(secret, shares_number, threshold)
     (first_part, second_part, third_part) = d_api(share_list)
-    distribution_gui(input_frame, first_part, second_part, third_part)
+    distribution_gui(input_frame, first_part, second_part, third_part, threshold)
 
 def delete_frame(frame):
     # messagebox.showwarning("showwarning", "Warning")

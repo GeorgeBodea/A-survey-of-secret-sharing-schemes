@@ -52,9 +52,12 @@ def reconstruction_api(threshold):
     
     downloaded_shares = firebase_shares + dropbox_shares + clever_shares
     number_of_shares = len(downloaded_shares)
-
-    print("The secret reconstructed is: " + SSSS.reconstruct_secret(downloaded_shares))
+    secret = SSSS.reconstruct_secret(downloaded_shares)
+    
+    print("The secret reconstructed is: " + secret)
     print(str(number_of_shares) + " shares have been used to reconstruct the secret")
+    
+    return secret
 
 
 # if __name__ == '__main__':
