@@ -1,6 +1,6 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
 import SSSS_Firebase
-import SSSS_DropBox
+import SSSS_Dropbox
 import SSSS_Clever
 
 def input_api(secret, shares_number, threshold):
@@ -36,7 +36,7 @@ def distribution_api(share_list):
     print("Third part: " + str(third_part))
 
     SSSS_Firebase.upload_firebase(first_part)
-    SSSS_DropBox.upload_dropbox(second_part)
+    SSSS_Dropbox.upload_dropbox(second_part)
     SSSS_Clever.upload_clever(third_part)
 
     return (first_part, second_part, third_part)
@@ -46,7 +46,7 @@ def reconstruction_api(threshold):
     dropbox_shares = []
     clever_shares = []
     if len(firebase_shares) < threshold:    
-        dropbox_shares = SSSS_DropBox.download_dropbox()
+        dropbox_shares = SSSS_Dropbox.download_dropbox()
     if ( len(firebase_shares) + len(dropbox_shares) ) < threshold:
         clever_shares = SSSS_Clever.download_clever()
     
