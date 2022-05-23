@@ -37,13 +37,22 @@ def distribution_gui(input_frame, first_part, second_part, third_part, threshold
     label.configure(font=(20))
     label.grid(row = 0, column = 0, columnspan=3, sticky = W, pady=30)
 
-    label = tk.Label(distribution_frame, text = "Firebase: " + str(first_part))
+    string_first_part = str(first_part)
+    string_first_part = string_first_part[1:len(string_first_part)-1]
+
+    string_second_part = str(second_part)
+    string_second_part = string_second_part[1:len(string_second_part)-1]
+
+    string_third_part = str(third_part)
+    string_third_part = string_third_part[1:len(string_third_part)-1]
+
+    label = tk.Label(distribution_frame, text = "Firebase: " + string_first_part)
     label.grid(row = 1, column = 0, sticky = W, pady=30, padx=10)
     
-    label = tk.Label(distribution_frame, text = "Dropbox: " + str(second_part))
+    label = tk.Label(distribution_frame, text = "Dropbox: " + string_second_part)
     label.grid(row = 3, column = 0, sticky = W, pady=30, padx=10)
 
-    label = tk.Label(distribution_frame, text = "CleverCloud: " + str(third_part))
+    label = tk.Label(distribution_frame, text = "CleverCloud: " + string_third_part)
     label.grid(row = 5, column = 0, sticky = W, pady=30, padx=10)
 
     len_fst = len(first_part)
@@ -77,7 +86,7 @@ def delete_frame(frame):
     frame.destroy()
 
 def set_input_window():
-    gui.geometry("380x420")
+    gui.geometry("480x520")
     gui.title("Secret Sharing Application")
 
     icon = tk.PhotoImage(file="./GraphicalUserInterface/s-logo.png")
