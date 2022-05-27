@@ -4,6 +4,12 @@ import sys
 sys.path.insert(1, './')
 from API import input_api as i_api, distribution_api as d_api, reconstruction_api as r_api
 
+def delete_frame(frame):
+    # messagebox.showwarning("showwarning", "Warning")
+    for widgets in frame.winfo_children():
+      widgets.destroy()
+    frame.pack_forget()
+    frame.destroy()
 
 def reconstruction_gui(input_frame, length_first, length_second, length_third, threshold):
     delete_frame(input_frame)
@@ -78,25 +84,71 @@ def send_input(input_frame, text_secret, text_shares, text_threshold):
     (first_part, second_part, third_part) = d_api(share_list)
     distribution_gui(input_frame, first_part, second_part, third_part, threshold)
 
-def delete_frame(frame):
-    # messagebox.showwarning("showwarning", "Warning")
-    for widgets in frame.winfo_children():
-      widgets.destroy()
-    frame.pack_forget()
-    frame.destroy()
+def pr():
+    print(1)
 
-def set_input_window():
-    gui.geometry("480x520")
-    gui.title("Secret Sharing Application")
+def databases_types_confirmation(button, input_frame, shares_number, label_select,
+ isFirebase, isClever, isDropbox, check_button_firebase, check_button_clever, check_button_dropbox):
+    button['text'] = 'Confirm'
+    button['command'] = pr()
+    label_select['text'] = "Number of shares: " + str(shares_number)
+    check_button_firebase.config(state=tk.DISABLED)
+    check_button_clever.config(state=tk.DISABLED)
+    check_button_dropbox.config(state=tk.DISABLED)
+    if (isFirebase.get() == 1):
+        num_firebase = tk.Spinbox(input_frame, from_=0, to= shares_number)
+        num_firebase.grid(row = 2, column = 2, sticky = W)
+        # num_firebase.bind(event_name, handler, add=None)
+    if (isClever.get() == 1):
+        num_clever = tk.Spinbox(input_frame, from_=0, to= shares_number)
+        num_clever.grid(row = 3, column = 2, sticky = W)
+    if (isDropbox.get() == 1):
+        num_dropbox = tk.Spinbox(input_frame, from_=0, to= shares_number)
+        num_dropbox.grid(row = 4, column = 2, sticky = W)
 
-    icon = tk.PhotoImage(file="./GraphicalUserInterface/s-logo.png")
-    gui.iconphoto(True, icon)
 
-def input_gui():
+def shares_location_gui(input_frame, secret, shares_number, threshold):
+    delete_frame(input_frame)
     input_frame = tk.Frame(gui)
     input_frame.pack()
 
-    title = tk.Label(input_frame, text="Secret Sharing Application ")
+    title = tk.Label(input_frame, text="Setup databases stage")
+    title.configure(font=(20))
+    title.grid(row = 0, column = 1, columnspan = 2, sticky = W, pady=30)
+
+    label_select = tk.Label(input_frame, text = "Select your types of cloud databases: ")
+    label_select.grid(row = 1, column = 1, sticky = W, pady=30, padx=10)
+
+    isFirebase = tk.IntVar()
+    check_button_firebase = tk.Checkbutton(input_frame, text="Google Firebase", variable=isFirebase)
+    check_button_firebase.grid(row = 2, column = 1, sticky = W, pady=20, padx=30)
+
+    isClever = tk.IntVar()
+    check_button_clever = tk.Checkbutton(input_frame, text="CleverCloud", variable=isClever)
+    check_button_clever.grid(row = 3, column = 1, sticky = W, pady=20, padx=30)
+
+    isDropbox = tk.IntVar()
+    check_button_dropbox = tk.Checkbutton(input_frame, text="Dropbox", variable=isDropbox)
+    check_button_dropbox.grid(row = 4, column = 1, sticky = W, pady=20, padx=30)
+
+    button = tk.Button(input_frame, 
+                            text="Confirm databases types", 
+                            width=25, 
+                            command=lambda: databases_types_confirmation(button, input_frame, shares_number, label_select, isFirebase, isClever, isDropbox, 
+                            check_button_firebase, check_button_clever, check_button_dropbox))
+    button.grid(row = 5, column = 1, sticky = W, pady=15)
+
+    # shares_number = int(text_shares)
+    # for i in range(1, shares_number+1):
+    #     text_secret = tk.Entry(input_frame)
+    #     text_secret.grid(row = i, column = 1, sticky = W)
+
+def input_gui(input_frame):
+    delete_frame(input_frame)
+    input_frame = tk.Frame(gui)
+    input_frame.pack()
+
+    title = tk.Label(input_frame, text="Input stage")
     title.configure(font=(20))
     title.grid(row = 0, column = 2, columnspan = 2, sticky = W, pady=30)
 
@@ -121,11 +173,41 @@ def input_gui():
     button = tk.Button(input_frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: send_input(input_frame, text_secret, text_shares, text_threshold))
+                            command=lambda: shares_location_gui(input_frame, text_secret.get(), text_shares.get(), text_threshold.get()))
     button.grid(row = 4, column = 1, columnspan = 2, sticky = W, pady=15)
+
+def start_gui():
+    start_frame = tk.Frame(gui)
+    start_frame.pack()
+
+    title = tk.Label(start_frame, text="Secret Sharing Application")
+    title.configure(font=(20))
+    title.grid(row = 0, column = 1, columnspan = 3, sticky = W, pady=30)
+
+    label = tk.Label(start_frame, text="Would you like to: ")
+    label.grid(row = 1, column = 1, sticky = W, pady=20, padx=30)
+
+    button = tk.Button(start_frame, 
+                            text='Share a secret', 
+                            width=25, 
+                            command=lambda: input_gui(start_frame))
+    button.grid(row = 2, column = 1, sticky = W, pady=15)
+
+    button = tk.Button(start_frame, 
+                            text='Reconstruct a secret', 
+                            width=25, 
+                            command=lambda: input_gui(start_frame))
+    button.grid(row = 3, column = 1, sticky = W, pady=15)
+
+def set_input_window():
+    gui.geometry("480x520")
+    gui.title("Secret Sharing Application")
+
+    icon = tk.PhotoImage(file="./GraphicalUserInterface/s-logo.png")
+    gui.iconphoto(True, icon)
     
 if __name__ == '__main__':
     gui = tk.Tk()
     set_input_window()
-    input_gui()
+    start_gui()
     gui.mainloop()
