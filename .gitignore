@@ -1,5 +1,6 @@
 __pycache__
 
 FirebaseConfig/key.json
+FirebaseConfig/key2.json
 DropboxConfig/keys.py
 CleverConfig/key.py
