@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import W, messagebox
 import sys
+import json
 
 from matplotlib.pyplot import flag
 sys.path.insert(1, './')
-from API import input_api as i_api, distribution_firebase_api as d_fb_api, reconstruction_api as r_api
+from API import input_api as i_api, distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, reconstruction_api as r_api
 
 def delete_frame(frame):
     # messagebox.showwarning("showwarning", "Warning")
@@ -84,15 +85,24 @@ def reconstruct_gui():
 def send_input(input_frame, 
                 secret, shares_number, threshold, 
                 button, 
-                list_entry_fb):
+                list_entry_fb,
+                list_entry_cc,
+                list_entry_dx):
     # Secret
     share_list = i_api(secret, shares_number, threshold)
     counter = 0
     
     for entry in list_entry_fb:
         fb_key = entry.get()
+        fb_key = json.loads(fb_key)
         app_name = "app" + str(counter)
-        d_fb_api(fb_key, share_list[counter], app_name)
+        d_fb_api(fb_key, app_name, share_list[counter])
+        counter += 1
+
+    for entry in list_entry_cc:
+        cc_key = entry.get()
+        cc_key = json.loads(cc_key)
+        d_cc_api(cc_key, share_list[counter])
         counter += 1
 
     # secret = text_secret.get()
@@ -101,6 +111,23 @@ def send_input(input_frame,
     # share_list, threshold = i_api(secret, shares_number, threshold)
     # (first_part, second_part, third_part) = d_api(share_list)
     # distribution_gui(input_frame, first_part, second_part, third_part, threshold)
+
+def entries_creator(input_frame, next_pos, entries_number, database_name):
+    label = tk.Label(input_frame, text = database_name + " keys: ")
+    label.configure(font=(7))
+    label.grid(row = next_pos, column = 0, columnspan=3, sticky = W, pady=30)
+    next_pos += 1
+
+    list_entry = []
+    for i in range(entries_number):
+        entry = tk.Entry(input_frame)
+        entry.grid(row = next_pos, column = 1, sticky = W, pady=5)
+        entry.insert(0, "Key")
+        next_pos += 1
+        list_entry.append(entry)
+
+    return (list_entry, next_pos)
+
 
 def db_set_gui(input_frame, 
                 secret, shares_number, threshold, shares_proportions):
@@ -115,19 +142,22 @@ def db_set_gui(input_frame,
     label.grid(row = next_pos, column = 0, columnspan=3, sticky = W, pady=30)
     next_pos += 1
 
-    if (shares_proportions[0] != 0):
-        label = tk.Label(input_frame, text = "Firebase keys: ")
-        label.configure(font=(10))
-        label.grid(row = next_pos, column = 0, columnspan=3, sticky = W, pady=30)
-        next_pos += 1
+    fb_number = shares_proportions[0]
+    cc_number = shares_proportions[1]
+    dx_number = shares_proportions[2]
 
-        list_entry_fb = []
-        for i in range(shares_proportions[0]):
-            entry = tk.Entry(input_frame)
-            entry.grid(row = next_pos, column = 1, sticky = W, pady=5)
-            entry.insert(0, "Key")
-            next_pos += 1
-            list_entry_fb.append(entry)
+    list_entry_fb = []
+    list_entry_cc = []
+    list_entry_dx = []
+
+    if (fb_number != 0):
+        list_entry_fb, next_pos = entries_creator(input_frame, next_pos, fb_number, "Firebase")
+    
+    if (cc_number != 0):
+        list_entry_cc, next_pos = entries_creator(input_frame, next_pos, cc_number, "CleverCloud")
+            
+    if (dx_number != 0):
+        list_entry_dx, next_pos = entries_creator(input_frame, next_pos, dx_number , "Dropbox") 
 
     button = tk.Button(input_frame, 
                             text="Confirm",
@@ -136,7 +166,9 @@ def db_set_gui(input_frame,
                                 input_frame, 
                                 secret, shares_number, threshold, 
                                 button,
-                                list_entry_fb
+                                list_entry_fb,
+                                list_entry_cc,
+                                list_entry_dx
                                 ))
     button.grid(row = next_pos, column = 1, sticky = W, pady=15)
     

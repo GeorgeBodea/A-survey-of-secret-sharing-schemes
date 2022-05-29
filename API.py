@@ -18,12 +18,15 @@ def input_api(secret, shares_number, threshold):
     share_list = SSSS.create_shares(secret, threshold, shares_number)
     return share_list
 
-def distribution_firebase_api(key, share, app_name):
-
+def distribution_firebase_api(key, app_name, share):
     print("Share: " + str(share))
-
     db = SSSS_Firebase.access_firebase(key, app_name)
     SSSS_Firebase.upload_firebase(db, share)
+
+def distribution_clevercloud_api(key, share):
+    print("Share: " + str(share))
+    db, db_connection = SSSS_Clever.access_clevercloud(key)
+    SSSS_Clever.upload_clever(db, db_connection, share)    
 
 def reconstruction_api(threshold):
     firebase_shares = SSSS_Firebase.download_firebase()

@@ -1,11 +1,12 @@
 import mysql.connector
-import CleverConfig.key as key
 
-dbx_connection = mysql.connector.connect(
-    host = key.host,
-    user = key.user,
-    password= key.password,
-    database = key.database
-)
+def initialize_clevercloud(key):
+    db_connection = mysql.connector.connect(
+        database = key[0]["value"],
+        host = key[1]["value"],
+        password= key[2]["value"],
+        user = key[5]["value"]
+    )
 
-dbx = dbx_connection.cursor()
+    db = db_connection.cursor()
+    return (db, db_connection)

@@ -26,8 +26,8 @@ def cleanup_firebase(db):
         db.collection("Shares").document(key).delete()
 
 def start_firebase(db, share_list):
-    cleanup_firebase()
+    cleanup_firebase(db)
     upload_firebase(share_list)
-    downloaded_shares = download_firebase()
+    downloaded_shares = download_firebase(db)
     print("Downloaded shares from Firebase: " + str(downloaded_shares))
     return downloaded_shares

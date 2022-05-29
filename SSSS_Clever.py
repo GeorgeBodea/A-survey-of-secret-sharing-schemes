@@ -1,32 +1,33 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
-from CleverConfig.clever_config import dbx, dbx_connection
+from CleverConfig.clever_config import initialize_clevercloud
 
-def cleanup_clever():
-    dbx.execute("DROP TABLE IF EXISTS shares")
+def access_clevercloud(key):
+    db, db_connection = initialize_clevercloud(key)
+    return (db, db_connection)
 
-def download_clever():
+def cleanup_clever(db):
+    db.execute("DROP TABLE IF EXISTS shares")
+
+def download_clever(db):
     sql_command = "SELECT * FROM shares"
-    dbx.execute(sql_command)
-    share_list_string = dbx.fetchall()
+    db.execute(sql_command)
+    share_list_string = db.fetchall()
     share_list = []
     for x,y in share_list_string:
         share_list.append((int(x), int(y)))
     return share_list
 
-def upload_clever(share_list):
-    cleanup_clever()
-    dbx.execute("CREATE TABLE shares (x VARCHAR(256), y VARCHAR(256))")
-    length = len(share_list)
-    for i in range(0, length):
-        share = share_list[i]
-        data = (str(share[0]), str(share[1]))
-        sql_command = "INSERT INTO shares (x, y) VALUES (%s, %s)"
-        dbx.execute(sql_command, data) 
-    dbx_connection.commit()
+def upload_clever(db, db_connection, share):
+    cleanup_clever(db)
+    db.execute("CREATE TABLE shares (x VARCHAR(256), y VARCHAR(256))")
+    data = (str(share[0]), str(share[1]))
+    sql_command = "INSERT INTO shares (x, y) VALUES (%s, %s)"
+    db.execute(sql_command, data) 
+    db_connection.commit()
 
-def start_clever(share_list):
-    cleanup_clever()
-    upload_clever(share_list)
-    downloaded_shares = download_clever()
+def start_clever(db, db_connection, share_list):
+    cleanup_clever(db)
+    upload_clever(db, db_connection, share_list)
+    downloaded_shares = download_clever(db)
     print("Downloaded shares from CleverCloud: " + str(downloaded_shares))
     return downloaded_shares
