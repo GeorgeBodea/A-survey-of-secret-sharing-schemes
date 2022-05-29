@@ -14,7 +14,7 @@ def download_clever(db):
     share_list = []
     for x,y in share_list_string:
         share_list.append((int(x), int(y)))
-    return share_list
+    return share_list[0]
 
 def upload_clever(db, db_connection, share):
     cleanup_clever(db)
