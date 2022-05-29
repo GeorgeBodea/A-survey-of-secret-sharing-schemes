@@ -5,7 +5,7 @@ import json
 
 from matplotlib.pyplot import flag
 sys.path.insert(1, './')
-from API import input_api as i_api, distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, reconstruction_api as r_api
+from API import input_api as i_api, distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, distribution_dropbox_api as d_dx_api, reconstruction_api as r_api
 
 def delete_frame(frame):
     # messagebox.showwarning("showwarning", "Warning")
@@ -103,6 +103,12 @@ def send_input(input_frame,
         cc_key = entry.get()
         cc_key = json.loads(cc_key)
         d_cc_api(cc_key, share_list[counter])
+        counter += 1
+
+    for entry in list_entry_dx:
+        dx_key = entry.get()
+        dx_key = json.loads(dx_key)
+        d_dx_api(dx_key, share_list[counter])
         counter += 1
 
     # secret = text_secret.get()

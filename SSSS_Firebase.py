@@ -1,4 +1,3 @@
-import Shamir_Secret_Sharing_Scheme as SSSS
 from FirebaseConfig.firebase_config import initialize_firebase
 
 def access_firebase(key, app_name):

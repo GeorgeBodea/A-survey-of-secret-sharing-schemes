@@ -28,6 +28,11 @@ def distribution_clevercloud_api(key, share):
     db, db_connection = SSSS_Clever.access_clevercloud(key)
     SSSS_Clever.upload_clever(db, db_connection, share)    
 
+def distribution_dropbox_api(key, share):
+    print("Share: " + str(share))
+    db = SSSS_Dropbox.access_dropbox(key)
+    SSSS_Dropbox.upload_dropbox(db, share)    
+
 def reconstruction_api(threshold):
     firebase_shares = SSSS_Firebase.download_firebase()
 

@@ -1,4 +1,3 @@
-import Shamir_Secret_Sharing_Scheme as SSSS
 from CleverConfig.clever_config import initialize_clevercloud
 
 def access_clevercloud(key):
