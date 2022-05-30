@@ -1,7 +1,7 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
 import SSSS_Firebase
-import SSSS_Dropbox
 import SSSS_Clever
+import SSSS_Cosmos
 
 def input_api(secret, shares_number, threshold):
     secret = int.from_bytes(secret.encode('ASCII'), 'little')
@@ -40,14 +40,14 @@ def retrival_clevercloud_api(key):
     print("Share downloaded: " + str(share)) 
     return share 
 
-def distribution_dropbox_api(key, share):
+def distribution_cosmos_api(key, share):
     print("Share: " + str(share))
-    db = SSSS_Dropbox.access_dropbox(key)
-    SSSS_Dropbox.upload_dropbox(db, share)    
+    col = SSSS_Cosmos.access_cosmos(key)
+    SSSS_Cosmos.upload_cosmos(col, share)    
 
-def retrival_dropbox_api(key):
-    db = SSSS_Dropbox.access_dropbox(key)
-    share = SSSS_Dropbox.download_dropbox(db)
+def retrival_cosmos_api(key):
+    col = SSSS_Cosmos.access_cosmos(key)
+    share = SSSS_Cosmos.download_cosmos(col)
     print("Share downloaded: " + str(share))
     return share 
 

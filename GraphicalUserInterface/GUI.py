@@ -6,8 +6,8 @@ import json
 from matplotlib.pyplot import flag
 sys.path.insert(1, './')
 from API import input_api as i_api
-from API import distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, distribution_dropbox_api as d_dx_api
-from API import retrival_firebase_api as r_fb_api, retrival_clevercloud_api as r_cc_api, retrival_dropbox_api as r_dx_api
+from API import distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, distribution_cosmos_api as d_co_api
+from API import retrival_firebase_api as r_fb_api, retrival_clevercloud_api as r_cc_api, retrival_cosmos_api as r_co_api
 from API import reconstruction_api as r_api
 
 def delete_frame(frame):
@@ -50,7 +50,7 @@ def reconstruct_secret(frame,
                 button, 
                 list_entry_fb,
                 list_entry_cc,
-                list_entry_dx):
+                list_entry_co):
     counter = 0
 
     threshold = list_of_arguments[0]
@@ -73,10 +73,10 @@ def reconstruct_secret(frame,
         list_of_shares.append(share)
         counter += 1
 
-    for entry in list_entry_dx:
-        dx_key = entry.get()
-        dx_key = json.loads(dx_key)
-        share = r_dx_api(dx_key)
+    for entry in list_entry_co:
+        co_key = entry.get()
+        co_key = json.loads(co_key)
+        share = r_co_api(co_key)
         list_of_shares.append(share)
         counter += 1
 
@@ -107,7 +107,7 @@ def distribute_shares(frame,
                 button, 
                 list_entry_fb,
                 list_entry_cc,
-                list_entry_dx):
+                list_entry_co):
     counter = 0
 
     secret = list_of_arguments[0]
@@ -129,10 +129,10 @@ def distribute_shares(frame,
         d_cc_api(cc_key, share_list[counter])
         counter += 1
 
-    for entry in list_entry_dx:
-        dx_key = entry.get()
-        dx_key = json.loads(dx_key)
-        d_dx_api(dx_key, share_list[counter])
+    for entry in list_entry_co:
+        co_key = entry.get()
+        co_key = json.loads(co_key)
+        d_co_api(co_key, share_list[counter])
         counter += 1
 
     sent_confirmation_gui(frame)
@@ -171,11 +171,11 @@ def access_databases_gui(frame,
 
     fb_number = shares_proportions[0]
     cc_number = shares_proportions[1]
-    dx_number = shares_proportions[2]
+    co_number = shares_proportions[2]
 
     list_entry_fb = []
     list_entry_cc = []
-    list_entry_dx = []
+    list_entry_co = []
 
     if (fb_number != 0):
         list_entry_fb, next_pos = entries_creator(frame, next_pos, fb_number, "Firebase")
@@ -183,8 +183,8 @@ def access_databases_gui(frame,
     if (cc_number != 0):
         list_entry_cc, next_pos = entries_creator(frame, next_pos, cc_number, "CleverCloud")
             
-    if (dx_number != 0):
-        list_entry_dx, next_pos = entries_creator(frame, next_pos, dx_number , "Dropbox") 
+    if (co_number != 0):
+        list_entry_co, next_pos = entries_creator(frame, next_pos, co_number , "Cosmos") 
 
     len_of_args = len(list_of_arguments)
     
@@ -198,7 +198,7 @@ def access_databases_gui(frame,
                                     button,
                                     list_entry_fb,
                                     list_entry_cc,
-                                    list_entry_dx
+                                    list_entry_co
                                     ))
         button.grid(row = next_pos, column = 1, sticky = W, pady=15)
     else:
@@ -211,7 +211,7 @@ def access_databases_gui(frame,
                                     button,
                                     list_entry_fb,
                                     list_entry_cc,
-                                    list_entry_dx
+                                    list_entry_co
                                     ))
         button.grid(row = next_pos, column = 1, sticky = W, pady=15)
 
@@ -219,7 +219,7 @@ def access_databases_gui(frame,
 def check_shares_number(frame, 
                         list_of_arguments, 
                         button, label_select,
-                        num_firebase, num_clever, num_dropbox): 
+                        num_firebase, num_clever, num_cosmos): 
     shares_placed = 0                    
     shares_proportions = [0, 0, 0]
     if (num_firebase.get() != ''):
@@ -232,10 +232,10 @@ def check_shares_number(frame,
         shares_placed += num_clever
         shares_proportions[1] = num_clever  
 
-    if (num_dropbox.get() != ''):
-        num_dropbox = int(num_dropbox.get())
-        shares_placed += num_dropbox
-        shares_proportions[2] = num_dropbox
+    if (num_cosmos.get() != ''):
+        num_cosmos = int(num_cosmos.get())
+        shares_placed += num_cosmos
+        shares_proportions[2] = num_cosmos
 
     shares_number = list_of_arguments[1]
            
@@ -247,18 +247,18 @@ def check_shares_number(frame,
 def choose_number_databases_gui(frame, 
                 list_of_arguments, 
                 button, label_select,
-                isFirebase, isClever, isDropbox, 
-                ck_firebase, ck_clever, ck_dropbox):
+                isFirebase, isClever, isCosmos, 
+                ck_firebase, ck_clever, ck_cosmos):
         
     shares_number = list_of_arguments[1]
     label_select['text'] = "Number of shares: " + str(shares_number)
     ck_firebase.config(state=tk.DISABLED)
     ck_clever.config(state=tk.DISABLED)
-    ck_dropbox.config(state=tk.DISABLED)
+    ck_cosmos.config(state=tk.DISABLED)
 
     num_firebase = tk.Spinbox(frame, from_=0, to= 0)
     num_clever = tk.Spinbox(frame, from_=0, to= 0)
-    num_dropbox = tk.Spinbox(frame, from_=0, to= 0)
+    num_cosmos = tk.Spinbox(frame, from_=0, to= 0)
 
     if (isFirebase.get() == 1):
         num_firebase = tk.Spinbox(frame, from_=1, to= shares_number)
@@ -267,15 +267,15 @@ def choose_number_databases_gui(frame,
     if (isClever.get() == 1):
         num_clever = tk.Spinbox(frame, from_=1, to= shares_number)
         num_clever.grid(row = 3, column = 2, sticky = W)
-    if (isDropbox.get() == 1):
-        num_dropbox = tk.Spinbox(frame, from_=1, to= shares_number)
-        num_dropbox.grid(row = 4, column = 2, sticky = W)
+    if (isCosmos.get() == 1):
+        num_cosmos = tk.Spinbox(frame, from_=1, to= shares_number)
+        num_cosmos.grid(row = 4, column = 2, sticky = W)
         
     button['text'] = 'Confirm'
     button['command'] =lambda: check_shares_number(frame, 
                                             list_of_arguments, 
                                             button,  label_select,
-                                            num_firebase, num_clever, num_dropbox) 
+                                            num_firebase, num_clever, num_cosmos) 
 
 
 def choose_databases_gui(frame, list_of_arguments):
@@ -298,9 +298,9 @@ def choose_databases_gui(frame, list_of_arguments):
     ck_clever = tk.Checkbutton(frame, text="CleverCloud", variable=isClever)
     ck_clever.grid(row = 3, column = 1, sticky = W, pady=20, padx=30)
 
-    isDropbox = tk.IntVar()
-    ck_dropbox = tk.Checkbutton(frame, text="Dropbox", variable=isDropbox)
-    ck_dropbox.grid(row = 4, column = 1, sticky = W, pady=20, padx=30)
+    isCosmos = tk.IntVar()
+    ck_cosmos = tk.Checkbutton(frame, text="Cosmos", variable=isCosmos)
+    ck_cosmos.grid(row = 4, column = 1, sticky = W, pady=20, padx=30)
 
     button = tk.Button(frame, 
                             text="Confirm databases types",
@@ -309,8 +309,8 @@ def choose_databases_gui(frame, list_of_arguments):
                                 frame, 
                                 list_of_arguments,
                                 button, label_select,
-                                isFirebase, isClever, isDropbox, 
-                                ck_firebase, ck_clever, ck_dropbox))
+                                isFirebase, isClever, isCosmos, 
+                                ck_firebase, ck_clever, ck_cosmos))
     button.grid(row = 5, column = 1, sticky = W, pady=15)
 
 
