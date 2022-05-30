@@ -178,13 +178,13 @@ def access_databases_gui(frame,
     list_entry_co = []
 
     if (fb_number != 0):
-        list_entry_fb, next_pos = entries_creator(frame, next_pos, fb_number, "Firebase")
+        list_entry_fb, next_pos = entries_creator(frame, next_pos, fb_number, "Google Firebase")
     
     if (cc_number != 0):
-        list_entry_cc, next_pos = entries_creator(frame, next_pos, cc_number, "CleverCloud")
+        list_entry_cc, next_pos = entries_creator(frame, next_pos, cc_number, "Clever Cloud")
             
     if (co_number != 0):
-        list_entry_co, next_pos = entries_creator(frame, next_pos, co_number , "Cosmos") 
+        list_entry_co, next_pos = entries_creator(frame, next_pos, co_number , "Azure Cosmos") 
 
     len_of_args = len(list_of_arguments)
     
@@ -249,7 +249,7 @@ def choose_number_databases_gui(frame,
                 button, label_select,
                 isFirebase, isClever, isCosmos, 
                 ck_firebase, ck_clever, ck_cosmos):
-        
+
     shares_number = list_of_arguments[1]
     label_select['text'] = "Number of shares: " + str(shares_number)
     ck_firebase.config(state=tk.DISABLED)
@@ -295,11 +295,11 @@ def choose_databases_gui(frame, list_of_arguments):
     ck_firebase.grid(row = 2, column = 1, sticky = W, pady=20, padx=30)
 
     isClever = tk.IntVar()
-    ck_clever = tk.Checkbutton(frame, text="CleverCloud", variable=isClever)
+    ck_clever = tk.Checkbutton(frame, text="Clever Cloud", variable=isClever)
     ck_clever.grid(row = 3, column = 1, sticky = W, pady=20, padx=30)
 
     isCosmos = tk.IntVar()
-    ck_cosmos = tk.Checkbutton(frame, text="Cosmos", variable=isCosmos)
+    ck_cosmos = tk.Checkbutton(frame, text="Azure Cosmos", variable=isCosmos)
     ck_cosmos.grid(row = 4, column = 1, sticky = W, pady=20, padx=30)
 
     button = tk.Button(frame, 
@@ -323,12 +323,6 @@ def reconstruction_input_gui(frame):
     title.configure(font=(20))
     title.grid(row = 0, column = 1, columnspan = 2, sticky = W, pady=30)
 
-    label_shares = tk.Label(frame, text="Input the number of shares: ")
-    label_shares.grid(row = 2, column = 0, columnspan = 3, sticky = W, pady=20, padx=30)    
-
-    text_shares = tk.Entry(frame)
-    text_shares.grid(row = 2, column = 3, sticky = W)
-
     label_threshold = tk.Label(frame, text="Input the threshold: ")
     label_threshold.grid(row = 3, column = 0, columnspan = 3, sticky = W, pady=20, padx=30)    
 
@@ -339,7 +333,7 @@ def reconstruction_input_gui(frame):
                             text='Confirm', 
                             width=25, 
                             command=lambda: choose_databases_gui(frame, 
-                            list_of_arguments = [int(text_threshold.get()), int(text_shares.get())]
+                            list_of_arguments = [-1, int(text_threshold.get())]
                             ))
     button.grid(row = 4, column = 1, columnspan = 2, sticky = W, pady=15)
 
