@@ -1,4 +1,4 @@
-from AzureCosmosConfig.cosmos_config import initialize_cosmos
+from CosmosConfig.cosmos_config import initialize_cosmos
 
 def access_cosmos(key):
     collection = initialize_cosmos(key)
