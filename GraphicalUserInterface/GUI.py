@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import W, messagebox
 import sys
 import json
+import traceback
 
 from matplotlib.pyplot import flag
 sys.path.insert(1, './')
@@ -9,9 +10,9 @@ from API import input_api as i_api
 from API import distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, distribution_cosmos_api as d_co_api
 from API import retrival_firebase_api as r_fb_api, retrival_clevercloud_api as r_cc_api, retrival_cosmos_api as r_co_api
 from API import reconstruction_api as r_api
+from API import check_threshold_shares as check_th_sh
 
 def delete_frame(frame):
-    # messagebox.showwarning("showwarning", "Warning")
     for widgets in frame.winfo_children():
       widgets.destroy()
     frame.pack_forget()
@@ -216,7 +217,7 @@ def access_databases_gui(frame,
         button.grid(row = next_pos, column = 1, sticky = W, pady=15)
 
     
-def check_shares_number(frame, 
+def equal_shares_number(frame, 
                         list_of_arguments, 
                         button, label_select,
                         num_firebase, num_clever, num_cosmos): 
@@ -263,7 +264,6 @@ def choose_number_databases_gui(frame,
     if (isFirebase.get() == 1):
         num_firebase = tk.Spinbox(frame, from_=1, to= shares_number)
         num_firebase.grid(row = 2, column = 2, sticky = W)
-        # num_firebase.bind(event_name, handler, add=None)
     if (isClever.get() == 1):
         num_clever = tk.Spinbox(frame, from_=1, to= shares_number)
         num_clever.grid(row = 3, column = 2, sticky = W)
@@ -272,7 +272,7 @@ def choose_number_databases_gui(frame,
         num_cosmos.grid(row = 4, column = 2, sticky = W)
         
     button['text'] = 'Confirm'
-    button['command'] =lambda: check_shares_number(frame, 
+    button['command'] =lambda: equal_shares_number(frame, 
                                             list_of_arguments, 
                                             button,  label_select,
                                             num_firebase, num_clever, num_cosmos) 
@@ -313,6 +313,27 @@ def choose_databases_gui(frame, list_of_arguments):
                                 ck_firebase, ck_clever, ck_cosmos))
     button.grid(row = 5, column = 1, sticky = W, pady=15)
 
+def check_shares_number(frame, list_of_arguments): 
+    shares = list_of_arguments[1]
+    threshold = list_of_arguments[2]
+    try:
+        check_th_sh(shares, threshold)
+    except Exception as error:
+        print(repr(error))
+        messagebox.showwarning("showwarning", repr(error))
+    else:
+        choose_databases_gui(frame, list_of_arguments)
+
+def check_threshold(frame, list_of_arguments):
+    threshold = list_of_arguments[1]
+    try:
+        if threshold < 1:
+            raise ValueError("The threshold should be higher than 0")
+    except Exception as error:
+        print(repr(error))
+        messagebox.showwarning("showwarning", repr(error))
+    else:
+        choose_databases_gui(frame, list_of_arguments)            
 
 def reconstruction_input_gui(frame):
     delete_frame(frame)
@@ -332,8 +353,8 @@ def reconstruction_input_gui(frame):
     button = tk.Button(frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: choose_databases_gui(frame, 
-                            list_of_arguments = [-1, int(text_threshold.get())]
+                            command=lambda: check_threshold(frame, 
+                                list_of_arguments = [-1, int(text_threshold.get())]
                             ))
     button.grid(row = 4, column = 1, columnspan = 2, sticky = W, pady=15)
 
@@ -368,7 +389,7 @@ def distribution_input_gui(frame):
     button = tk.Button(frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: choose_databases_gui(frame, 
+                            command=lambda: check_shares_number(frame, 
                             [text_secret.get(), int(text_shares.get()), int(text_threshold.get())]
                             ))
     button.grid(row = 4, column = 1, columnspan = 2, sticky = W, pady=15)
@@ -403,8 +424,13 @@ def set_input_window():
     icon = tk.PhotoImage(file="./GraphicalUserInterface/s-logo.png")
     gui.iconphoto(True, icon)
     
+def show_error(self, *args):
+    err = traceback.format_exception(*args)
+    messagebox.showerror('Exception', err[-1])
+
 if __name__ == '__main__':
     gui = tk.Tk()
     set_input_window()
+    tk.Tk.report_callback_exception = show_error
     start_gui()
     gui.mainloop()
