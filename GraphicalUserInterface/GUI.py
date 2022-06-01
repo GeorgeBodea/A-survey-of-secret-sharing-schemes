@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import W, messagebox
+from tkinter import W, messagebox, filedialog
 import sys
 import json
 import traceback
@@ -49,9 +49,9 @@ def secret_reconstruction_gui(frame, list_of_shares):
 def reconstruct_secret(frame, 
                 list_of_arguments, 
                 button, 
-                list_entry_fb,
-                list_entry_cc,
-                list_entry_co):
+                labels_fb,
+                labels_cc,
+                labels_co):
     counter = 0
 
     threshold = list_of_arguments[0]
@@ -59,24 +59,27 @@ def reconstruct_secret(frame,
 
     list_of_shares = []
 
-    for entry in list_entry_fb:
-        fb_key = entry.get()
-        fb_key = json.loads(fb_key)
+    for label in labels_fb:
+        path_file = label["text"]    
+        file = open(path_file)
+        fb_key = json.load(file)
         app_name = "app" + str(counter)
         share = r_fb_api(fb_key, app_name)
         list_of_shares.append(share)        
         counter += 1
 
-    for entry in list_entry_cc:
-        cc_key = entry.get()
-        cc_key = json.loads(cc_key)
+    for label in labels_cc:
+        path_file = label["text"]    
+        file = open(path_file)
+        cc_key = json.load(file)
         share = r_cc_api(cc_key)
         list_of_shares.append(share)
         counter += 1
 
-    for entry in list_entry_co:
-        co_key = entry.get()
-        co_key = json.loads(co_key)
+    for label in labels_co:
+        path_file = label["text"]    # 
+        file = open(path_file)
+        co_key = json.load(file)
         share = r_co_api(co_key)
         list_of_shares.append(share)
         counter += 1
@@ -106,9 +109,9 @@ def sent_confirmation_gui(frame):
 def distribute_shares(frame, 
                 list_of_arguments, 
                 button, 
-                list_entry_fb,
-                list_entry_cc,
-                list_entry_co):
+                labels_fb,
+                labels_cc,
+                labels_co): 
     counter = 0
 
     secret = list_of_arguments[0]
@@ -117,43 +120,67 @@ def distribute_shares(frame,
 
     share_list = i_api(secret, shares_number, threshold)
 
-    for entry in list_entry_fb:
-        fb_key = entry.get()
-        fb_key = json.loads(fb_key)
+    for label in labels_fb:
+        path_file = label["text"]    
+        file = open(path_file)
+        fb_key = json.load(file)
         app_name = "app" + str(counter)
         d_fb_api(fb_key, app_name, share_list[counter])
         counter += 1
 
-    for entry in list_entry_cc:
-        cc_key = entry.get()
-        cc_key = json.loads(cc_key)
+    for label in labels_cc:
+        path_file = label["text"]    
+        file = open(path_file)
+        cc_key = json.load(file)
         d_cc_api(cc_key, share_list[counter])
         counter += 1
 
-    for entry in list_entry_co:
-        co_key = entry.get()
-        co_key = json.loads(co_key)
+    for label in labels_co:
+        path_file = label["text"]    # 
+        file = open(path_file)
+        co_key = json.load(file)
         d_co_api(co_key, share_list[counter])
         counter += 1
 
     sent_confirmation_gui(frame)
 
 
+def browseFiles(label_file_explorer):
+    file_name = filedialog.askopenfilename(initialdir = "/",
+                                          title = "Select a File",
+                                          filetypes = (("JSON files",
+                                                        "*.json*"),
+                                                        ("Text files",
+                                                        "*.txt*"),
+                                                       ("all files",
+                                                        "*.*")))
+    label_file_explorer.configure(text= file_name)
+
 def entries_creator(frame, next_pos, entries_number, database_name):
     label = tk.Label(frame, text = database_name + " keys: ")
     label.configure(font=(7))
-    label.grid(row = next_pos, column = 0, columnspan=3, sticky = W, pady=30)
+    label.grid(row = next_pos, column = 1, sticky = W, pady=(20, 0))
     next_pos += 1
 
-    list_entry = []
-    for i in range(entries_number):
-        entry = tk.Entry(frame)
-        entry.grid(row = next_pos, column = 1, sticky = W, pady=5)
-        entry.insert(0, "Key")
-        next_pos += 1
-        list_entry.append(entry)
+    list_labels = []
 
-    return (list_entry, next_pos)
+    for i in range(entries_number):
+        label_file_explorer = tk.Label(frame,
+                                text = "File Explorer using Tkinter",
+                                height = 4,
+                                fg = "blue")
+        label_file_explorer.grid(row = next_pos, column = 1, sticky = W)
+
+        next_pos += 1
+        button_explore = tk.Button(frame,
+                        text = "Browse Files",
+                        command = lambda: browseFiles(label_file_explorer))
+        button_explore.grid(row = next_pos, column = 1, sticky = W)
+        
+        next_pos += 1
+        list_labels.append(label_file_explorer)
+
+    return (list_labels, next_pos)
 
 
 def access_databases_gui(frame, 
@@ -167,25 +194,25 @@ def access_databases_gui(frame,
 
     label = tk.Label(frame, text = "Access databases stage")
     label.configure(font=(20))
-    label.grid(row = next_pos, column = 0, columnspan=3, sticky = W, pady=30)
+    label.grid(row = next_pos, column = 1, columnspan=3, sticky = W,  pady=(30, 10))
     next_pos += 1
 
     fb_number = shares_proportions[0]
     cc_number = shares_proportions[1]
     co_number = shares_proportions[2]
 
-    list_entry_fb = []
-    list_entry_cc = []
-    list_entry_co = []
+    labels_fb = []
+    labels_cc = []
+    labels_co = []
 
     if (fb_number != 0):
-        list_entry_fb, next_pos = entries_creator(frame, next_pos, fb_number, "Google Firebase")
+        labels_fb, next_pos = entries_creator(frame, next_pos, fb_number, "Google Firebase")
     
     if (cc_number != 0):
-        list_entry_cc, next_pos = entries_creator(frame, next_pos, cc_number, "Clever Cloud")
+        labels_cc, next_pos = entries_creator(frame, next_pos, cc_number, "Clever Cloud")
             
     if (co_number != 0):
-        list_entry_co, next_pos = entries_creator(frame, next_pos, co_number , "Azure Cosmos") 
+        labels_co, next_pos = entries_creator(frame, next_pos, co_number , "Azure Cosmos") 
 
     len_of_args = len(list_of_arguments)
     
@@ -197,11 +224,11 @@ def access_databases_gui(frame,
                                     frame, 
                                     list_of_arguments, 
                                     button,
-                                    list_entry_fb,
-                                    list_entry_cc,
-                                    list_entry_co
+                                    labels_fb,
+                                    labels_cc,
+                                    labels_co
                                     ))
-        button.grid(row = next_pos, column = 1, sticky = W, pady=15)
+        button.grid(row = next_pos, column = 1, sticky = W, pady=(30, 0))
     else:
         button = tk.Button(frame, 
                                 text="Reconstruct",
@@ -210,11 +237,11 @@ def access_databases_gui(frame,
                                     frame, 
                                     list_of_arguments, 
                                     button,
-                                    list_entry_fb,
-                                    list_entry_cc,
-                                    list_entry_co
+                                    labels_fb,
+                                    labels_cc,
+                                    labels_co
                                     ))
-        button.grid(row = next_pos, column = 1, sticky = W, pady=15)
+        button.grid(row = next_pos, column = 1, sticky = W, pady=(30, 0))
 
     
 def equal_shares_number(frame, 
@@ -426,6 +453,7 @@ def set_input_window():
     
 def show_error(self, *args):
     err = traceback.format_exception(*args)
+    print(err)
     messagebox.showerror('Exception', err[-1])
 
 if __name__ == '__main__':

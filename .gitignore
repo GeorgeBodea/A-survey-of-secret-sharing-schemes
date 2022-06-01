@@ -6,4 +6,4 @@ CleverConfig/key.json
 CleverConfig/key2.json
 DropboxConfig/key.json
 DropboxConfig/key2.json
-AzureCosmosConfig/key.json
+CosmosConfig/key.json
