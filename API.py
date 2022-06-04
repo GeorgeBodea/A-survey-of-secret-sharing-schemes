@@ -15,9 +15,7 @@ def check_threshold_shares(shares_number, threshold):
 
 def input_api(secret, shares_number, threshold):
     secret = int.from_bytes(secret.encode('ASCII'), 'little')
-
     check_threshold_shares(shares_number, threshold)
-
     share_list = SSSS.create_shares(secret, threshold, shares_number)
     return share_list
 
@@ -56,7 +54,6 @@ def retrival_cosmos_api(key):
 
 def reconstruction_api(shares_list):
     secret = SSSS.reconstruct_secret(shares_list)
-    
     print("The secret reconstructed is: " + secret)
     return secret
 

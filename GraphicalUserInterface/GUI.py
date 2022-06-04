@@ -156,6 +156,9 @@ def browseFiles(label_file_explorer):
                                                         "*.*")))
     label_file_explorer.configure(text= file_name)
 
+def something():
+    return 1
+
 def entries_creator(frame, next_pos, entries_number, database_name):
     label = tk.Label(frame, text = database_name + " keys: ")
     label.configure(font=(7))
@@ -166,7 +169,7 @@ def entries_creator(frame, next_pos, entries_number, database_name):
 
     for i in range(entries_number):
         label_file_explorer = tk.Label(frame,
-                                text = "File Explorer using Tkinter",
+                                text = "Add key file",
                                 height = 4,
                                 fg = "blue")
         label_file_explorer.grid(row = next_pos, column = 1, sticky = W)
@@ -187,8 +190,21 @@ def access_databases_gui(frame,
                 list_of_arguments,
                 shares_proportions):
     delete_frame(frame)
-    frame = tk.Frame(gui)
-    frame.pack()
+    main_frame = tk.Frame(gui)
+    main_frame.pack(fill = tk.BOTH, expand = 1)
+
+    canvas = tk.Canvas(main_frame)
+    canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand = 1)
+
+    scrollbar = tk.Scrollbar(main_frame, orient=tk.VERTICAL, command=canvas.yview)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.bind('<Configure>', lambda event: canvas.configure(scrollregion=canvas.bbox("all")))
+
+    frame = tk.Frame(canvas)
+
+    canvas.create_window((0, 0), window=frame, anchor="nw")
 
     next_pos = 0 
 
@@ -221,7 +237,7 @@ def access_databases_gui(frame,
                                 text="Distribute",
                                 width=25, 
                                 command=lambda: distribute_shares(
-                                    frame, 
+                                    main_frame, 
                                     list_of_arguments, 
                                     button,
                                     labels_fb,
@@ -234,7 +250,7 @@ def access_databases_gui(frame,
                                 text="Reconstruct",
                                 width=25, 
                                 command=lambda: reconstruct_secret(
-                                    frame, 
+                                    main_frame, 
                                     list_of_arguments, 
                                     button,
                                     labels_fb,
