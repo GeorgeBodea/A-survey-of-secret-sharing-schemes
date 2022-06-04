@@ -8,7 +8,7 @@ from matplotlib.pyplot import flag
 sys.path.insert(1, './')
 from API import input_api as i_api
 from API import distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, distribution_cosmos_api as d_co_api
-from API import retrival_firebase_api as r_fb_api, retrival_clevercloud_api as r_cc_api, retrival_cosmos_api as r_co_api
+from API import retrieval_firebase_api as r_fb_api, retrieval_clevercloud_api as r_cc_api, retrieval_cosmos_api as r_co_api
 from API import reconstruction_api as r_api
 from API import check_threshold_shares as check_th_sh
 

@@ -1,7 +1,7 @@
 import Shamir_Secret_Sharing_Scheme as SSSS
-import SSSS_Firebase
-import SSSS_Clever
-import SSSS_Cosmos
+import FirebaseConfig.SSSS_Firebase as SSSS_Firebase
+import CleverConfig.SSSS_Clever as SSSS_Clever
+import CosmosConfig.SSSS_Cosmos as SSSS_Cosmos
 
 def check_threshold_shares(shares_number, threshold):
     if threshold > shares_number:
@@ -20,33 +20,33 @@ def input_api(secret, shares_number, threshold):
     return share_list
 
 def distribution_firebase_api(key, app_name, share):
-    print("Share: " + str(share))
+    print("Share uploaded: " + str(share))
     db = SSSS_Firebase.access_firebase(key, app_name)
     SSSS_Firebase.upload_firebase(db, share)
 
-def retrival_firebase_api(key, app_name):
+def retrieval_firebase_api(key, app_name):
     db = SSSS_Firebase.access_firebase(key, app_name)
     share = SSSS_Firebase.download_firebase(db)
     print("Share downloaded: " + str(share))
     return share
 
 def distribution_clevercloud_api(key, share):
-    print("Share: " + str(share))
+    print("Share uploaded: " + str(share))
     db, db_connection = SSSS_Clever.access_clevercloud(key)
     SSSS_Clever.upload_clever(db, db_connection, share)    
 
-def retrival_clevercloud_api(key):
+def retrieval_clevercloud_api(key):
     db, db_connection = SSSS_Clever.access_clevercloud(key)
     share = SSSS_Clever.download_clever(db)  
     print("Share downloaded: " + str(share)) 
     return share 
 
 def distribution_cosmos_api(key, share):
-    print("Share: " + str(share))
+    print("Share uploaded: " + str(share))
     col = SSSS_Cosmos.access_cosmos(key)
     SSSS_Cosmos.upload_cosmos(col, share)    
 
-def retrival_cosmos_api(key):
+def retrieval_cosmos_api(key):
     col = SSSS_Cosmos.access_cosmos(key)
     share = SSSS_Cosmos.download_cosmos(col)
     print("Share downloaded: " + str(share))
