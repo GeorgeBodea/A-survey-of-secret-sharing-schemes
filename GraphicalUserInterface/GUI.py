@@ -21,8 +21,7 @@ def delete_frame(frame):
 def back_to_start(frame):
     delete_frame(frame)
     frame = tk.Frame(gui)
-    frame.pack()    
-
+    frame.pack()   
     start_gui()
 
 def secret_reconstruction_gui(frame, list_of_shares):

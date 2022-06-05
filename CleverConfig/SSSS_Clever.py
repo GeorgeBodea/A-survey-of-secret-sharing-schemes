@@ -23,10 +23,3 @@ def upload_clever(db, db_connection, share):
     sql_command = "INSERT INTO shares (x, y) VALUES (%s, %s)"
     db.execute(sql_command, data) 
     db_connection.commit()
-
-def start_clever(db, db_connection, share_list):
-    cleanup_clever(db)
-    upload_clever(db, db_connection, share_list)
-    downloaded_shares = download_clever(db)
-    print("Downloaded shares from CleverCloud: " + str(downloaded_shares))
-    return downloaded_shares

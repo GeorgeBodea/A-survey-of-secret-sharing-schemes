@@ -18,15 +18,3 @@ def upload_cosmos(col, share):
     cleanup_cosmos(col)
     data = { "x": str(share[0]), "y": str(share[1]) }
     col.insert_one(data) 
-
-# key = { "URI" : "mongodb://george:7YTdTHRD5yaxD5vXtNrkhuecmhwZzMAXlnarKPFRe7fWvcC0NftV0H3S9rK0dBSu79uBxakynE0VZBpAb8ABDw==@george.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@george@"}
-# col = access_cosmos(key)
-# upload_cosmos(col, (101, 54))
-# print(download_cosmos(col))
-
-def start_cosmos(db, share_list):
-    cleanup_cosmos(db)
-    upload_cosmos(share_list)
-    downloaded_shares = download_cosmos(db)
-    print("Downloaded shares from cosmos: " + str(downloaded_shares))
-    return downloaded_shares
