@@ -45,16 +45,50 @@ def secret_reconstruction_gui(frame, list_of_shares):
                             command=lambda: back_to_start(frame))
     button.grid(row = 2, column = 1, sticky = W, pady=15)
 
+def add_local_shares(frame, list_of_shares, list_local_shares):
+    for entry in list_local_shares:
+        text = entry.get()
+        split_string = text.split(",")
+        first_element = split_string[0][1:].strip()
+        x = int(first_element)
+        second_element = split_string[1][:-1].strip()
+        y = int(second_element)
+        share = (x, y)
+        list_of_shares.append(share)
+        print("Share downloaded: " + str(share))
+    secret_reconstruction_gui(frame, list_of_shares)
+
+def distribute_local_gui(frame, list_of_shares, cl_number):
+    delete_frame(frame)
+    frame = tk.Frame(gui)
+    frame.pack()
+
+    title = tk.Label(frame, text="Local distributed shares")
+    title.configure(font=(20))
+    title.grid(row = 0, column = 1, columnspan = 2, sticky = W, pady=30)
+
+    list_local_entries = []
+    counter = 1
+    for i in range(cl_number):
+        entry_local_share = tk.Entry(frame, width = 25)
+        entry_local_share.grid(row = counter, column = 1, sticky = W, pady=10)
+        list_local_entries.append(entry_local_share)
+        counter += 1
+
+    button = tk.Button(frame, 
+                            text='Confirm', 
+                            width=25, 
+                            command=lambda: add_local_shares(frame, list_of_shares, list_local_entries))
+    button.grid(row = counter, column = 1, sticky = W, pady=15)
+
 def reconstruct_secret(frame, 
                 list_of_arguments, 
                 button, 
+                cl_number,
                 labels_fb,
                 labels_cc,
                 labels_co):
     counter = 0
-
-    threshold = list_of_arguments[0]
-    shares_number = list_of_arguments[1]
 
     list_of_shares = []
 
@@ -76,15 +110,17 @@ def reconstruct_secret(frame,
         counter += 1
 
     for label in labels_co:
-        path_file = label["text"]    # 
+        path_file = label["text"] 
         file = open(path_file)
         co_key = json.load(file)
         share = r_co_api(co_key)
         list_of_shares.append(share)
         counter += 1
 
-    secret_reconstruction_gui(frame, list_of_shares)
-
+    if cl_number == 0:
+        secret_reconstruction_gui(frame, list_of_shares)
+    else:
+        distribute_local_gui(frame, list_of_shares, cl_number)
 
 def sent_confirmation_gui(frame):
     delete_frame(frame)
@@ -105,9 +141,47 @@ def sent_confirmation_gui(frame):
     button.grid(row = 2, column = 1, sticky = W, pady=15)
     button.config( height = 2, width = 45 )
 
+def copy_to_clipboard(share):
+    gui.clipboard_clear() 
+    gui.clipboard_append(share)
+
+def show_clear_shares(frame, remaining_list):
+    delete_frame(frame)
+    frame = tk.Frame(gui)
+    frame.pack()
+
+    title = tk.Label(frame, text="Local distributed shares")
+    title.configure(font=(20))
+    title.grid(row = 0, column = 1, columnspan = 2, sticky = W, pady=30)
+
+    num_clear = len(remaining_list)
+    counter = 1
+    for i in range(num_clear):
+        share = remaining_list[i]
+        print("Share uploaded: " + str(share))
+        text_threshold = tk.Entry(frame)
+        text_threshold.insert(0, str(share))
+        text_threshold.grid(row = counter, column = 1, sticky = W, pady=10)
+
+        button = tk.Button(frame, 
+                                text='Copy to clipboard', 
+                                width=15, 
+                                command=lambda share=share: copy_to_clipboard(str(share)))
+        button.grid(row = counter, column = 2, sticky = W, pady=15)
+
+        counter += 1
+
+
+    button = tk.Button(frame, 
+                            text='Confirm', 
+                            width=25, 
+                            command=lambda: sent_confirmation_gui(frame))
+    button.grid(row = counter, column = 1, sticky = W, pady=15)
+
 def distribute_shares(frame, 
                 list_of_arguments, 
                 button, 
+                cl_number,
                 labels_fb,
                 labels_cc,
                 labels_co): 
@@ -135,16 +209,20 @@ def distribute_shares(frame,
         counter += 1
 
     for label in labels_co:
-        path_file = label["text"]    # 
+        path_file = label["text"]  
         file = open(path_file)
         co_key = json.load(file)
         d_co_api(co_key, share_list[counter])
         counter += 1
 
-    sent_confirmation_gui(frame)
+    remaining_list = share_list[counter:]
 
+    if cl_number == 0:
+        sent_confirmation_gui(frame)
+    else:
+        show_clear_shares(frame, remaining_list)
 
-def browseFiles(label_file_explorer):
+def browseFiles(list_labels, index_label):
     file_name = filedialog.askopenfilename(initialdir = "/",
                                           title = "Select a File",
                                           filetypes = (("JSON files",
@@ -153,10 +231,7 @@ def browseFiles(label_file_explorer):
                                                         "*.txt*"),
                                                        ("all files",
                                                         "*.*")))
-    label_file_explorer.configure(text= file_name)
-
-def something():
-    return 1
+    list_labels[index_label].configure(text= file_name)
 
 def entries_creator(frame, next_pos, entries_number, database_name):
     label = tk.Label(frame, text = database_name + " keys: ")
@@ -166,6 +241,7 @@ def entries_creator(frame, next_pos, entries_number, database_name):
 
     list_labels = []
 
+    counter_label = 0
     for i in range(entries_number):
         label_file_explorer = tk.Label(frame,
                                 text = "Add key file",
@@ -176,9 +252,10 @@ def entries_creator(frame, next_pos, entries_number, database_name):
         next_pos += 1
         button_explore = tk.Button(frame,
                         text = "Browse Files",
-                        command = lambda: browseFiles(label_file_explorer))
+                        command = lambda index_label=counter_label: browseFiles(list_labels, index_label))
         button_explore.grid(row = next_pos, column = 1, sticky = W)
-        
+
+        counter_label += 1
         next_pos += 1
         list_labels.append(label_file_explorer)
 
@@ -203,18 +280,19 @@ def access_databases_gui(frame,
 
     frame = tk.Frame(canvas)
 
-    canvas.create_window((0, 0), window=frame, anchor="nw")
+    canvas.create_window((130, 0), window=frame, anchor="nw")
 
     next_pos = 0 
 
     label = tk.Label(frame, text = "Access databases stage")
     label.configure(font=(20))
-    label.grid(row = next_pos, column = 1, columnspan=3, sticky = W,  pady=(30, 10))
+    label.grid(row = next_pos, column = 1, columnspan=3, sticky = W, pady=(30, 10))
     next_pos += 1
 
-    fb_number = shares_proportions[0]
-    cc_number = shares_proportions[1]
-    co_number = shares_proportions[2]
+    cl_number = shares_proportions[0]
+    fb_number = shares_proportions[1]
+    cc_number = shares_proportions[2]
+    co_number = shares_proportions[3]
 
     labels_fb = []
     labels_cc = []
@@ -229,6 +307,14 @@ def access_databases_gui(frame,
     if (co_number != 0):
         labels_co, next_pos = entries_creator(frame, next_pos, co_number , "Azure Cosmos") 
 
+    if (fb_number + cc_number + co_number == 0):
+        label_file_explorer = tk.Label(frame,
+                                text = "No cloud database selected",
+                                height = 4,
+                                fg = "blue")
+        label_file_explorer.grid(row = next_pos, column = 1, sticky = W, pady=(30, 0))
+        next_pos += 1
+
     len_of_args = len(list_of_arguments)
     
     if (len_of_args == 3):
@@ -239,6 +325,7 @@ def access_databases_gui(frame,
                                     main_frame, 
                                     list_of_arguments, 
                                     button,
+                                    cl_number,
                                     labels_fb,
                                     labels_cc,
                                     labels_co
@@ -252,6 +339,7 @@ def access_databases_gui(frame,
                                     main_frame, 
                                     list_of_arguments, 
                                     button,
+                                    cl_number,
                                     labels_fb,
                                     labels_cc,
                                     labels_co
@@ -262,23 +350,29 @@ def access_databases_gui(frame,
 def equal_shares_number(frame, 
                         list_of_arguments, 
                         button, label_select,
-                        num_firebase, num_clever, num_cosmos): 
+                        num_clear, num_firebase, num_clever, num_cosmos): 
     shares_placed = 0                    
-    shares_proportions = [0, 0, 0]
+    shares_proportions = [0, 0, 0, 0]
+
+    if (num_clear.get() != ''):
+        num_clear = int(num_clear.get())
+        shares_placed += num_clear
+        shares_proportions[0] = num_clear
+
     if (num_firebase.get() != ''):
         num_firebase = int(num_firebase.get())
         shares_placed += num_firebase
-        shares_proportions[0] = num_firebase
+        shares_proportions[1] = num_firebase
 
     if (num_clever.get() != ''):
         num_clever = int(num_clever.get()) 
         shares_placed += num_clever
-        shares_proportions[1] = num_clever  
+        shares_proportions[2] = num_clever  
 
     if (num_cosmos.get() != ''):
         num_cosmos = int(num_cosmos.get())
         shares_placed += num_cosmos
-        shares_proportions[2] = num_cosmos
+        shares_proportions[3] = num_cosmos
 
     shares_number = list_of_arguments[1]
            
@@ -290,34 +384,40 @@ def equal_shares_number(frame,
 def choose_number_databases_gui(frame, 
                 list_of_arguments, 
                 button, label_select,
-                isFirebase, isClever, isCosmos, 
-                ck_firebase, ck_clever, ck_cosmos):
+                isClear, isFirebase, isClever, isCosmos, 
+                ck_clear, ck_firebase, ck_clever, ck_cosmos):
 
     shares_number = list_of_arguments[1]
     label_select['text'] = "Number of shares: " + str(shares_number)
+
+    ck_clear.config(state=tk.DISABLED)
     ck_firebase.config(state=tk.DISABLED)
     ck_clever.config(state=tk.DISABLED)
     ck_cosmos.config(state=tk.DISABLED)
-
+    
+    num_clear = tk.Spinbox(frame, from_=0, to= 0)
     num_firebase = tk.Spinbox(frame, from_=0, to= 0)
     num_clever = tk.Spinbox(frame, from_=0, to= 0)
     num_cosmos = tk.Spinbox(frame, from_=0, to= 0)
 
+    if (isClear.get() == 1):
+        num_clear = tk.Spinbox(frame, from_=1, to= shares_number)
+        num_clear.grid(row = 2, column = 2, sticky = W)
     if (isFirebase.get() == 1):
         num_firebase = tk.Spinbox(frame, from_=1, to= shares_number)
-        num_firebase.grid(row = 2, column = 2, sticky = W)
+        num_firebase.grid(row = 3, column = 2, sticky = W)
     if (isClever.get() == 1):
         num_clever = tk.Spinbox(frame, from_=1, to= shares_number)
-        num_clever.grid(row = 3, column = 2, sticky = W)
+        num_clever.grid(row = 4, column = 2, sticky = W)
     if (isCosmos.get() == 1):
         num_cosmos = tk.Spinbox(frame, from_=1, to= shares_number)
-        num_cosmos.grid(row = 4, column = 2, sticky = W)
+        num_cosmos.grid(row = 5, column = 2, sticky = W)
         
     button['text'] = 'Confirm'
     button['command'] =lambda: equal_shares_number(frame, 
                                             list_of_arguments, 
                                             button,  label_select,
-                                            num_firebase, num_clever, num_cosmos) 
+                                            num_clear, num_firebase, num_clever, num_cosmos) 
 
 
 def choose_databases_gui(frame, list_of_arguments):
@@ -329,20 +429,24 @@ def choose_databases_gui(frame, list_of_arguments):
     title.configure(font=(20))
     title.grid(row = 0, column = 1, columnspan = 2, sticky = W, pady=30)
 
-    label_select = tk.Label(frame, text = "Select your types of cloud databases: ")
+    label_select = tk.Label(frame, text = "Select your types of databases: ")
     label_select.grid(row = 1, column = 1, sticky = W, pady=30, padx=10)
+
+    isClear = tk.IntVar()
+    ck_clear = tk.Checkbutton(frame, text="Local", variable=isClear)
+    ck_clear.grid(row = 2, column = 1, sticky = W, pady=20, padx=30)
 
     isFirebase = tk.IntVar()
     ck_firebase = tk.Checkbutton(frame, text="Google Firebase", variable=isFirebase)
-    ck_firebase.grid(row = 2, column = 1, sticky = W, pady=20, padx=30)
+    ck_firebase.grid(row = 3, column = 1, sticky = W, pady=20, padx=30)
 
     isClever = tk.IntVar()
     ck_clever = tk.Checkbutton(frame, text="Clever Cloud", variable=isClever)
-    ck_clever.grid(row = 3, column = 1, sticky = W, pady=20, padx=30)
+    ck_clever.grid(row = 4, column = 1, sticky = W, pady=20, padx=30)
 
     isCosmos = tk.IntVar()
     ck_cosmos = tk.Checkbutton(frame, text="Azure Cosmos", variable=isCosmos)
-    ck_cosmos.grid(row = 4, column = 1, sticky = W, pady=20, padx=30)
+    ck_cosmos.grid(row = 5, column = 1, sticky = W, pady=20, padx=30)
 
     button = tk.Button(frame, 
                             text="Confirm databases types",
@@ -351,9 +455,9 @@ def choose_databases_gui(frame, list_of_arguments):
                                 frame, 
                                 list_of_arguments,
                                 button, label_select,
-                                isFirebase, isClever, isCosmos, 
-                                ck_firebase, ck_clever, ck_cosmos))
-    button.grid(row = 5, column = 1, sticky = W, pady=15)
+                                isClear, isFirebase, isClever, isCosmos, 
+                                ck_clear, ck_firebase, ck_clever, ck_cosmos))
+    button.grid(row = 6, column = 1, sticky = W, pady=15)
 
 def check_shares_number(frame, list_of_arguments): 
     shares = list_of_arguments[1]
