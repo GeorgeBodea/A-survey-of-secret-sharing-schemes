@@ -4,7 +4,6 @@ import sys
 import json
 import traceback
 
-sys.path.insert(1, './')
 from API import input_api as i_api
 from API import distribution_firebase_api as d_fb_api, distribution_clevercloud_api as d_cc_api, distribution_cosmos_api as d_co_api
 from API import retrieval_firebase_api as r_fb_api, retrieval_clevercloud_api as r_cc_api, retrieval_cosmos_api as r_co_api
@@ -565,7 +564,7 @@ def set_input_window():
     gui.geometry("480x520")
     gui.title("Secret Sharing Application")
 
-    icon = tk.PhotoImage(file="./GraphicalUserInterface/s-logo.png")
+    icon = tk.PhotoImage(file="./key.png")
     gui.iconphoto(True, icon)
     
 def show_error(self, *args):

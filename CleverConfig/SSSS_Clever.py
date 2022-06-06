@@ -1,4 +1,4 @@
-from CleverConfig.clever_config import initialize_clevercloud
+from .clever_config import initialize_clevercloud
 
 def access_clevercloud(key):
     db, db_connection = initialize_clevercloud(key)

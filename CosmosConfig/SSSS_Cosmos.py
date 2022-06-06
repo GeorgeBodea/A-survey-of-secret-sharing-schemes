@@ -1,4 +1,4 @@
-from CosmosConfig.cosmos_config import initialize_cosmos
+from .cosmos_config import initialize_cosmos
 
 def access_cosmos(key):
     collection = initialize_cosmos(key)

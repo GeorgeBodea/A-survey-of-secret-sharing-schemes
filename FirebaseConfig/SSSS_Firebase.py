@@ -1,4 +1,4 @@
-from FirebaseConfig.firebase_config import initialize_firebase
+from .firebase_config import initialize_firebase
 
 def access_firebase(key, app_name):
     db = initialize_firebase(key, app_name)
