@@ -59,9 +59,7 @@ def add_local_shares(frame, list_of_shares, list_local_shares):
     secret_reconstruction_gui(frame, list_of_shares)
 
 def distribute_local_gui(frame, list_of_shares, cl_number):
-    delete_frame(frame)
-    frame = tk.Frame(gui)
-    frame.pack()
+    main_frame, frame = add_scrollbar(frame)
 
     title = tk.Label(frame, text="Local distributed shares")
     title.configure(font=(20))
@@ -78,7 +76,7 @@ def distribute_local_gui(frame, list_of_shares, cl_number):
     button = tk.Button(frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: add_local_shares(frame, list_of_shares, list_local_entries))
+                            command=lambda: add_local_shares(main_frame, list_of_shares, list_local_entries))
     button.grid(row = counter, column = 1, sticky = W, pady=15)
 
 def reconstruct_secret(frame, 
@@ -146,9 +144,7 @@ def copy_to_clipboard(share):
     gui.clipboard_append(share)
 
 def show_clear_shares(frame, remaining_list):
-    delete_frame(frame)
-    frame = tk.Frame(gui)
-    frame.pack()
+    main_frame, frame = add_scrollbar(frame)
 
     title = tk.Label(frame, text="Local distributed shares")
     title.configure(font=(20))
@@ -175,7 +171,7 @@ def show_clear_shares(frame, remaining_list):
     button = tk.Button(frame, 
                             text='Confirm', 
                             width=25, 
-                            command=lambda: sent_confirmation_gui(frame))
+                            command=lambda: sent_confirmation_gui(main_frame))
     button.grid(row = counter, column = 1, sticky = W, pady=15)
 
 def distribute_shares(frame, 
@@ -261,10 +257,7 @@ def entries_creator(frame, next_pos, entries_number, database_name):
 
     return (list_labels, next_pos)
 
-
-def access_databases_gui(frame, 
-                list_of_arguments,
-                shares_proportions):
+def add_scrollbar(frame):
     delete_frame(frame)
     main_frame = tk.Frame(gui)
     main_frame.pack(fill = tk.BOTH, expand = 1)
@@ -280,7 +273,13 @@ def access_databases_gui(frame,
 
     frame = tk.Frame(canvas)
 
-    canvas.create_window((130, 0), window=frame, anchor="nw")
+    canvas.create_window((110, 0), window=frame, anchor="nw")
+    return (main_frame, frame)
+
+def access_databases_gui(frame, 
+                list_of_arguments,
+                shares_proportions):
+    main_frame, frame = add_scrollbar(frame)
 
     next_pos = 0 
 
