@@ -564,7 +564,7 @@ def set_input_window():
     gui.geometry("480x520")
     gui.title("Secret Sharing Application")
 
-    icon = tk.PhotoImage(file="./key.png")
+    icon = tk.PhotoImage(file="./s-logo.png")
     gui.iconphoto(True, icon)
     
 def show_error(self, *args):
