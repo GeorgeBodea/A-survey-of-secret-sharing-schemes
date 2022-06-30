@@ -35,10 +35,11 @@ def create_x_coordinates(shares_number):
 
    while(counter_unique_numbers < shares_number):
        generated_number = secrets.randbelow(MAX_BOUND)
-       if generated_number not in unique_numbers:
-           x_coordinates.append(generated_number)
-           unique_numbers.add(generated_number)
-           counter_unique_numbers += 1
+       if generated_number != 0:
+        if generated_number not in unique_numbers:
+            x_coordinates.append(generated_number)
+            unique_numbers.add(generated_number)
+            counter_unique_numbers += 1
 
    return x_coordinates
 
