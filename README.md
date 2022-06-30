@@ -1,8 +1,7 @@
 # A-survey-of-secret-sharing-schemes
-In this Bachelor's thesis I have briefly explained many important secret sharing schemes and added an implementation of Shamir's secret sharing scheme. 
-This is intended to be an easy read for begginers in the study of secret sharing schemes with little knowledge of mathematics and computer science. 
+This is the code used for creating an application that implements Shamir's secret sharing scheme.
 
-The code for Shamir's secret sharing scheme is available in the bachelor's thesis and, separately, in  a file. The language used is Python 3.
+The installer, instructions and technical details for implementation for the finished application can be found [on this GitHub page](https://github.com/GeorgeBodea/Bachelor-s-Thesis). 
 
  ## <a id="utilizare">Usage</a>
  Run GUI.py and follow the instructions given in the graphical interface.
